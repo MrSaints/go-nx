@@ -1,10 +1,11 @@
 package	main
 
 import (
+	"log"
 	"github.com/mrsaints/gonx"
 )
 
 func main() {
-	nxFile := gonx.Open("../Data/Character.nx")
-	nxFile.Parse()
+	nxFile := gonx.New("../Data/Character.nx")
+	log.Print(nxFile.GetNode(1))
 }
