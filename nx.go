@@ -1,7 +1,7 @@
 package gonx
 
 import (
-    "log"
+    //"log"
     "os"
     "github.com/edsrzf/mmap-go"
 )

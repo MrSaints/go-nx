@@ -7,5 +7,5 @@ import (
 
 func main() {
 	nxFile := gonx.New("../Data/Character.nx")
-	log.Print(nxFile.Node(1).Name())
+	log.Print(nxFile.Root().Children())
 }
