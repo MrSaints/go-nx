@@ -1,43 +1,12 @@
 package gonx
 
 import (
-    "errors"
     //"log"
 )
 
-type Header struct {
-    Magic           string
-    NodeCount       uint32
-    NodeOffset      uint64
-    StringCount     uint32
-    StringOffset    uint64
-    BitmapCount     uint32
-    BitmapOffset    uint64
-    AudioCount      uint32
-    AudioOFfset     uint64
-}
-
-func (NX *NXFile) ParseHeader() {
-    NX.Header = Header{}
-    NX.Header.Magic = string(NX.Raw[0:4])
-
-    if NX.Header.Magic != "PKG4" {
-        err := errors.New(NX.Name + " is not a PKG4 NX file.")
-        pError(err)
-    }
-
-    NX.Header.NodeCount = ReadU32(NX.Raw[4:8])
-    NX.Header.NodeOffset = ReadU64(NX.Raw[8:16])
-    NX.Header.StringCount = ReadU32(NX.Raw[16:20])
-    NX.Header.StringOffset = ReadU64(NX.Raw[20:28])
-    NX.Header.BitmapCount = ReadU32(NX.Raw[28:32])
-    NX.Header.BitmapOffset = ReadU64(NX.Raw[32:40])
-    NX.Header.AudioCount = ReadU32(NX.Raw[40:44])
-    NX.Header.AudioOFfset = ReadU64(NX.Raw[44:52])
-}
-
 type Node struct {
-    Name        string
+    *NXFile
+    StringID    uint32
     ChildID     uint32
     Count       uint16
     Type        uint16
@@ -71,12 +40,13 @@ type AudioNode struct {
     Length  uint32
 }
 
-func (NX *NXFile) GetNode(index int) (node Node) {
-    node = Node{}
+func (NX *NXFile) Node(index int) (node *Node) {
+    node = new(Node)
+    node.NXFile = NX
     offset := NX.Header.NodeOffset + uint64(index) * 20
 
-    stringID := int(ReadU32(NX.Raw[offset:]))
-    node.Name = NX.GetString(stringID)
+    stringID := ReadU32(NX.Raw[offset:])
+    node.StringID = stringID
     offset += 4
     node.ChildID = ReadU32(NX.Raw[offset:])
     offset += 4
@@ -99,12 +69,17 @@ func (NX *NXFile) GetNode(index int) (node Node) {
         case 6: // NX_AUDIO
             node.Data = AudioNode{ReadU32(NX.Raw[offset:]), ReadU32(NX.Raw[offset + 4:])}
     }
+
+    //NX.Indexes = make(map[string]int)
+    //NX.Indexes[NX.GetString(int(stringID))] = int(stringID)
+
     return
 }
 
-func (NX *NXFile) GetString(index int) string {
-    tableOffset := NX.Header.StringOffset + uint64(index) * 8
-    stringOffset := ReadU64(NX.Raw[tableOffset:])
-    length := ReadU16(NX.Raw[stringOffset:])
-    return string(NX.Raw[stringOffset+2:stringOffset+2+uint64(length)])
+func (NX *NXFile) Root() *Node {
+    return NX.GetNode(0)
+}
+
+func (node *Node) Name() string {
+    return node.NXFile.GetString(int(node.StringID))
 }
