@@ -1,7 +1,7 @@
 package gonx
 
 import (
-    //"log"
+    "sync"
 )
 
 type Children struct {
@@ -90,14 +90,21 @@ func (node *Node) Children() (children *Children) {
     children = new(Children)
     children.Indexes = make(map[string]int)
 
+    var wg sync.WaitGroup
+    wg.Add(int(node.Count) - int(node.ChildID))
+
     for i := int(node.ChildID); i < int(node.Count); i++ {
-        childNode := new(Node)
-        childNode.NXFile = NX
-        childNode.Parse(i)
-        children.Nodes = append(children.Nodes, childNode)
-        children.Indexes[childNode.Name()] = int(childNode.StringID)
+        go func(i int) {
+            defer wg.Done()
+            childNode := new(Node)
+            childNode.NXFile = NX
+            childNode.Parse(i)
+            children.Nodes = append(children.Nodes, childNode)
+            children.Indexes[childNode.Name()] = int(childNode.StringID)
+        }(i)
     }
 
+    wg.Wait()
     return
 }
 
