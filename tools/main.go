@@ -7,5 +7,8 @@ import (
 
 func main() {
 	nxFile := gonx.New("../Data/Character.nx")
-	log.Print(nxFile.Root().Children())
+	root := nxFile.Root()
+	log.Print(root.ChildByID(26))
+	log.Print(root.Child("Cap"))
+	log.Print(root.Indexes)
 }
