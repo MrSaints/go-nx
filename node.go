@@ -47,7 +47,7 @@ type AudioNode struct {
 }
 
 func (node *Node) ParseNode(index int) {
-    if node.StringID != 0 {
+    if node.StringID != 0 || index >= int(node.NXFile.Header.NodeCount) {
         return
     }
 
