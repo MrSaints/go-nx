@@ -1,23 +1,19 @@
 package gonx
 
 import (
+    "io/ioutil"
     //"log"
-    "os"
-    "github.com/edsrzf/mmap-go"
+    //"os"
 )
 
 type NXFile struct {
     FileName        string
-    Raw             mmap.MMap
+    Raw             []byte
     Header          *Header
-    //Indexes         map[string]int
 }
 
 func New(fileName string) (NX *NXFile) {
-    file, err := os.Open(fileName)
-    pError(err)
-
-    buffer, err := mmap.Map(file, mmap.RDONLY, 0)
+    buffer, err := ioutil.ReadFile(fileName)
     pError(err)
 
     NX = new(NXFile)
