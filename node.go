@@ -16,6 +16,7 @@ type Node struct {
     Count       uint16
     Type        uint16
     Data        interface{}
+    *Children
 }
 
 type LongNode struct {
@@ -45,7 +46,7 @@ type AudioNode struct {
     Length  uint32
 }
 
-func (node *Node) Parse(index int) {
+func (node *Node) ParseNode(index int) {
     if node.StringID != 0 {
         return
     }
@@ -83,27 +84,29 @@ func (node *Node) Name() string {
     return node.NXFile.String(int(node.StringID))
 }
 
-func (node *Node) Children() (children *Children) {
-    // TODO: Check if loaded / prevent reinitialization
+func (node *Node) ParseChildren() {
+    if node.Count == 0 || node.Children != nil {
+        return
+    }
 
-    NX := node.NXFile
-    children = new(Children)
+    children := new(Children)
     children.Indexes = make(map[string]int)
 
-    for i := int(node.ChildID); i < int(node.Count); i++ {
+    for i := 0; i < int(node.Count); i++ {
         childNode := new(Node)
-        childNode.NXFile = NX
-        childNode.Parse(i)
+        childNode.NXFile = node.NXFile
+        childNode.ParseNode(int(node.ChildID) + i)
 
         children.Indexes[childNode.Name()] = int(childNode.StringID)
         children.Nodes = append(children.Nodes, childNode)
     }
-    return
+
+    node.Children = children
 }
 
 func (NX *NXFile) Root() (node *Node) {
     node = new(Node)
     node.NXFile = NX
-    node.Parse(0)
+    node.ParseNode(0)
     return
 }
