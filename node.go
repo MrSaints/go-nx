@@ -80,10 +80,6 @@ func (node *Node) ParseNode(index int) {
     }
 }
 
-func (node *Node) Name() string {
-    return node.NXFile.String(int(node.StringID))
-}
-
 func (node *Node) ParseChildren() {
     if node.Count == 0 || node.Children != nil {
         return
@@ -104,9 +100,15 @@ func (node *Node) ParseChildren() {
     node.Children = children
 }
 
-func (NX *NXFile) Root() (node *Node) {
-    node = new(Node)
-    node.NXFile = NX
-    node.ParseNode(0)
-    return
+func (node *Node) Name() string {
+    return node.NXFile.String(int(node.StringID))
+}
+
+func (node *Node) Child(index int) *Node {
+    if index < 0 || index >= int(node.Count) {
+        return nil
+    }
+
+    node.ParseChildren()
+    return node.Nodes[index]
 }
