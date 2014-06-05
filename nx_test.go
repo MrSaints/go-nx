@@ -19,3 +19,11 @@ func BenchmarkRoot(b *testing.B) {
 		nxFile.Root()
 	}
 }
+
+func BenchmarkResolve(b *testing.B) {
+	nxFile := New(TEST_FILE)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		nxFile.Resolve("Cap", "")
+	}
+}

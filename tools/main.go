@@ -10,5 +10,5 @@ func main() {
 	root := nxFile.Root()
 	log.Print(root.ChildByID(26))
 	log.Print(root.Child("Cap"))
-	log.Print(root.Indexes)
+	log.Print(nxFile.Resolve("Cap", ""))
 }
