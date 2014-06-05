@@ -11,7 +11,7 @@ type Children struct {
 
 type Node struct {
     *NXFile
-    StringID    uint32
+    Name        string
     ChildID     uint32
     Count       uint16
     Type        uint16
@@ -47,7 +47,7 @@ type AudioNode struct {
 }
 
 func (node *Node) ParseNode(index int) {
-    if node.StringID != 0 || index >= int(node.NXFile.Header.NodeCount) {
+    if node.Name != "" || index >= int(node.NXFile.Header.NodeCount) {
         return
     }
 
@@ -55,7 +55,7 @@ func (node *Node) ParseNode(index int) {
     buffer := node.NXFile.Raw
 
     stringID := ReadU32(buffer[offset:])
-    node.StringID = stringID
+    node.Name = node.NXFile.String(int(stringID))
     offset += 4
     node.ChildID = ReadU32(buffer[offset:])
     offset += 4
@@ -93,15 +93,11 @@ func (node *Node) ParseChildren() {
         childNode.NXFile = node.NXFile
         childNode.ParseNode(int(node.ChildID) + i)
 
-        children.Indexes[childNode.Name()] = int(childNode.StringID)
+        children.Indexes[childNode.Name] = i
         children.Nodes = append(children.Nodes, childNode)
     }
 
     node.Children = children
-}
-
-func (node *Node) Name() string {
-    return node.NXFile.String(int(node.StringID))
 }
 
 func (node *Node) ChildByID(index int) *Node {
