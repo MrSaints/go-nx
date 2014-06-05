@@ -12,11 +12,11 @@ func BenchmarkRoot(b *testing.B) {
 	}
 }
 
-func BenchmarkChildren(b *testing.B) {
+func BenchmarkParseChildren(b *testing.B) {
 	nxFile := New("./Data/Base.nx")
 	root := nxFile.Root()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		root.Children()
+		root.ParseChildren()
 	}
 }
