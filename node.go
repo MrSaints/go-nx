@@ -1,7 +1,7 @@
 package gonx
 
 import (
-
+    //"log"
 )
 
 type Children struct {
@@ -104,11 +104,19 @@ func (node *Node) Name() string {
     return node.NXFile.String(int(node.StringID))
 }
 
-func (node *Node) Child(index int) *Node {
+func (node *Node) ChildByID(index int) *Node {
     if index < 0 || index >= int(node.Count) {
         return nil
     }
 
     node.ParseChildren()
     return node.Nodes[index]
+}
+
+func (node *Node) Child(index string) *Node {
+    node.ParseChildren()
+    if value, ok := node.Indexes[index]; node.Children != nil && ok {
+        return node.Nodes[value]
+    }
+    return nil
 }
