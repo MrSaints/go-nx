@@ -23,3 +23,10 @@ func New(fileName string) (NX *NXFile) {
     NX.Header = NX.ParseHeader()
     return
 }
+
+func (NX *NXFile) Root() (node *Node) {
+    node = new(Node)
+    node.NXFile = NX
+    node.ParseNode(0)
+    return
+}
