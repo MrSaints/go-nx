@@ -16,8 +16,8 @@ type Header struct {
     AudioOFfset     uint64
 }
 
-func (NX *NXFile) ParseHeader() (header *Header) {
-    header = new(Header)
+func (NX *NXFile) ParseHeader() (header Header) {
+    header = *new(Header)
     header.Magic = string(NX.Raw[0:4])
 
     if header.Magic != "PKG4" {

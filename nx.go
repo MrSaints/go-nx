@@ -8,7 +8,7 @@ import (
 type NXFile struct {
     FileName        string
     Raw             []byte
-    Header          *Header
+    Header          Header
 }
 
 func New(fileName string) (NX *NXFile) {
