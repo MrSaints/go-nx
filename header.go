@@ -17,8 +17,7 @@ type Header struct {
 }
 
 func (NX *NXFile) ParseHeader() (header Header) {
-    header = *new(Header)
-    header.Magic = string(NX.Raw[0:4])
+    header = Header{ Magic: string(NX.Raw[0:4]) }
 
     if header.Magic != "PKG4" {
         err := errors.New(NX.FileName + " is not a PKG4 NX file.")
