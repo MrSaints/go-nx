@@ -1,9 +1,5 @@
 package gonx
 
-import (
-
-)
-
 func (NX *NXFile) String(index int) string {
     tableOffset := NX.Header.StringOffset + uint64(index) * 8
     stringOffset := ReadU64(NX.Raw[tableOffset:])

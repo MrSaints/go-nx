@@ -1,9 +1,5 @@
 package gonx
 
-import (
-    //"log"
-)
-
 type Children struct {
     Indexes     map[string]int
     Nodes       []*Node
