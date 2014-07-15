@@ -85,16 +85,19 @@ func (node *Node) ParseChildren() {
         return
     }
 
-    children := new(Children)
-    children.Indexes = make(map[string]int)
+    totalNodes := int(node.Count)
 
-    for i := 0; i < int(node.Count); i++ {
+    children := new(Children)
+    children.Indexes = make(map[string]int, totalNodes)
+    children.Nodes = make([]*Node, totalNodes)
+
+    for i := 0; i < totalNodes; i++ {
         childNode := new(Node)
         childNode.NXFile = node.NXFile
         childNode.ParseNode(int(node.ChildID) + i)
 
         children.Indexes[childNode.Name] = i
-        children.Nodes = append(children.Nodes, childNode)
+        children.Nodes[i] = childNode
     }
 
     node.Children = children
