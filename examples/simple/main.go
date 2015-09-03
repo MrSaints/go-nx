@@ -6,9 +6,15 @@ import (
 )
 
 func main() {
-	nxFile := gonx.New("../../Data/Character.nx")
-	root := nxFile.Root()
-	log.Print(root.ChildByID(26))
-	log.Print(root.Child("Cap"))
-	log.Print(nxFile.Resolve("Cap", ""))
+	f, err := nx.NewFile("../../data/Character.nx")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	root, err := f.Root()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("%+v", root)
 }

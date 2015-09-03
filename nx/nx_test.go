@@ -4,26 +4,10 @@ import (
 	"testing"
 )
 
-const TEST_FILE = "./Data/Data.nx"
-
-func BenchmarkNew(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		New(TEST_FILE)
-	}
-}
-
-func BenchmarkRoot(b *testing.B) {
-	nxFile := New(TEST_FILE)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		nxFile.Root()
-	}
-}
-
-func BenchmarkResolve(b *testing.B) {
-	nxFile := New(TEST_FILE)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		nxFile.Resolve("Effect/BasicEff.img/LevelUp/5/origin", "")
+func TestRoot(t *testing.T) {
+	f, _ := NewFile(TEST_FILE)
+	_, err := f.Root()
+	if err != nil {
+		t.Fatalf("Root returned unexpected error: %v", err)
 	}
 }
