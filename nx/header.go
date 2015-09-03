@@ -26,6 +26,10 @@ func NewHeader(f *File) *Header {
 }
 
 func (h *Header) Parse() error {
+	if h.f == nil || len(h.f.raw) < 4 {
+		err := errors.New("The NX File or Header has not been initialised properly.")
+		return err
+	}
 	v := string(h.f.raw[0:4])
 	if v != PKG4 {
 		err := errors.New(h.f.fn + " is not a PKG4 NX file.")

@@ -18,12 +18,20 @@ func loadTestFile() (mmap.MMap, error) {
 }
 
 func TestNewFile(t *testing.T) {
+	tf, err := loadTestFile()
+	if err != nil {
+		t.Fatalf("Unable to load test file: %v", err)
+	}
+
 	f, err := NewFile(TEST_FILE)
 	if err != nil {
 		t.Fatalf("NewFile returned unexpected error: %v", err)
 	}
 	if got, want := f.fn, TEST_FILE; got != want {
-		t.Errorf("NewFile.fn is %v, want %v", got, want)
+		t.Errorf("File name is %v, want %v", got, want)
+	}
+	if got, want := len(f.raw), len(tf); got != want {
+		t.Errorf("Raw mmap buffer length is %v, want %v", got, want)
 	}
 }
 
@@ -33,6 +41,6 @@ func TestNewFile_noFile(t *testing.T) {
 		t.Errorf("Expected error to be returned")
 	}
 	if err, ok := err.(*os.PathError); !ok {
-		t.Errorf("Expected a *os.PathError, got %+v", err)
+		t.Errorf("Expected an OS path error, got %+v", err)
 	}
 }

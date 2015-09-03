@@ -6,8 +6,7 @@ import (
 
 func TestRoot(t *testing.T) {
 	f, _ := NewFile(TEST_FILE)
-	_, err := f.Root()
-	if err != nil {
+	if _, err := f.Root(); err != nil {
 		t.Fatalf("Root returned unexpected error: %v", err)
 	}
 }
