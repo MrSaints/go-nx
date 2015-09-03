@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mrsaints/go-nx"
+	"github.com/mrsaints/go-nx/nx"
 	"log"
 )
 

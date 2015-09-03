@@ -7,8 +7,8 @@ The `go-nx` library's design was inspired by Diamondo25's [node-nx-parser (Node)
 
 ## Installation
 
-The `go-nx` package is comprised of a library and a runnable binary, `tools/main.go` in this repo.
+The `go-nx` package is comprised of a library and a runnable binary, `examples/` in this repo.
 
 To install the library:
 
-	$ go get github.com/MrSaints/go-nx
+	$ go get github.com/MrSaints/go-nx/nx
