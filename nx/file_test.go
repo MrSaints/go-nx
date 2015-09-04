@@ -44,3 +44,9 @@ func TestNewFile_noFile(t *testing.T) {
 		t.Errorf("Expected an OS path error, got %+v", err)
 	}
 }
+
+func BenchmarkNewFile(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		NewFile(TEST_FILE)
+	}
+}
