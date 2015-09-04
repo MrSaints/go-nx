@@ -36,6 +36,15 @@ func TestNodeParse(t *testing.T) {
 	}
 }
 
+func TestNodeParse_twice(t *testing.T) {
+	f, _ := NewFile(TEST_FILE)
+	n := NewNode(f)
+	_ = n.Parse(1)
+	if n.Parse(1) == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
+
 func TestNodeParse_uninitialised(t *testing.T) {
 	f, _ := NewFile(TEST_FILE)
 	n := NewNode(f)
