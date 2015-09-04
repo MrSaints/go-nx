@@ -25,7 +25,7 @@ func TestNewFile(t *testing.T) {
 
 	f, err := NewFile(TEST_FILE)
 	if err != nil {
-		t.Fatalf("NewFile returned unexpected error: %v", err)
+		t.Fatalf("NewFile returned unexpected error: %+v", err)
 	}
 	if got, want := f.fn, TEST_FILE; got != want {
 		t.Errorf("File name is %v, want %v", got, want)

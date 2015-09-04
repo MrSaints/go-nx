@@ -1,2 +1,5 @@
 # NX Data
 data/
+
+# Test coverage
+coverage.out

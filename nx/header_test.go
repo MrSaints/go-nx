@@ -22,7 +22,7 @@ func TestHeaderParse(t *testing.T) {
 	nxf := &File{raw: tf}
 	h := NewHeader(nxf)
 	if h.Parse() != nil {
-		t.Fatalf("Parse returned unexpected error: %v", err)
+		t.Fatalf("Parse returned unexpected error: %+v", err)
 	}
 
 	if got, want := h.magic, PKG4; got != want {
@@ -56,8 +56,15 @@ func TestHeaderParse(t *testing.T) {
 
 func TestHeaderParse_noFile(t *testing.T) {
 	h := NewHeader(nil)
-	err := h.Parse()
-	if err == nil {
+	if h.Parse() == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
+
+func TestHeaderParse_wrongMagic(t *testing.T) {
+	f := &File{raw: []byte("PKG1")}
+	h := NewHeader(f)
+	if h.Parse() == nil {
 		t.Errorf("Expected error to be returned")
 	}
 }

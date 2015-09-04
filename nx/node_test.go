@@ -17,7 +17,7 @@ func TestNodeParse(t *testing.T) {
 	f, _ := NewFile(TEST_FILE)
 	n := NewNode(f)
 	if err := n.Parse(1); err != nil {
-		t.Fatalf("Parse returned unexpected error: %v", err)
+		t.Fatalf("Parse returned unexpected error: %+v", err)
 	}
 	if got, want := n.Name, "Character"; got != want {
 		t.Errorf("Node name is %v, want %v", got, want)
@@ -47,7 +47,7 @@ func TestNodeParse_uninitialised(t *testing.T) {
 
 func TestNodeParse_wrongIndex(t *testing.T) {
 	f, _ := NewFile(TEST_FILE)
-	if n := NewNode(f); n.Parse(uint(n.f.Header.nodeCount)+1) == nil {
+	if n := NewNode(f); n.Parse(uint(n.f.header.nodeCount)) == nil {
 		t.Errorf("Expected error to be returned")
 	}
 }
@@ -57,7 +57,7 @@ func TestNodeChildren(t *testing.T) {
 	n := NewNode(f)
 	_ = n.Parse(0)
 	if _, err := n.Children(); err != nil {
-		t.Fatalf("Children returned unexpected error: %v", err)
+		t.Fatalf("Children returned unexpected error: %+v", err)
 	}
 }
 
@@ -77,7 +77,7 @@ func TestGet(t *testing.T) {
 	got, _ := c.Get(0)
 	want := c.Nodes[0]
 	if got != want {
-		t.Errorf("Get returned %v, want %v", got, want)
+		t.Errorf("Get returned %+v, want %+v", got, want)
 	}
 }
 
@@ -86,7 +86,7 @@ func TestGet_wrongIndex(t *testing.T) {
 	n := NewNode(f)
 	_ = n.Parse(0)
 	c, _ := n.Children()
-	if _, err := c.Get(c.Total + 1); err == nil {
+	if _, err := c.Get(c.Total); err == nil {
 		t.Errorf("Expected error to be returned")
 	}
 }
@@ -98,10 +98,20 @@ func TestGetByName(t *testing.T) {
 	c, _ := n.Children()
 	cN, err := c.GetByName("Reactor")
 	if err != nil {
-		t.Fatalf("GetByName returned unexpected error: %v", err)
+		t.Fatalf("GetByName returned unexpected error: %+v", err)
 	}
 	if got, want := cN.Name, "Reactor"; got != want {
 		t.Errorf("Node name is %v, want %v", got, want)
+	}
+}
+
+func TestGetByName_wrongName(t *testing.T) {
+	f, _ := NewFile(TEST_FILE)
+	n := NewNode(f)
+	_ = n.Parse(0)
+	c, _ := n.Children()
+	if _, err := c.GetByName("Invalid Name"); err == nil {
+		t.Errorf("Expected error to be returned")
 	}
 }
 
@@ -111,12 +121,20 @@ func TestChild(t *testing.T) {
 	_ = n.Parse(0)
 	cN, err := n.Child(10)
 	if err != nil {
-		t.Fatalf("Child returned unexpected error: %v", err)
+		t.Fatalf("Child returned unexpected error: %+v", err)
 	}
 	c, _ := n.Children()
 	tcN, _ := c.Get(10)
 	if got, want := *cN, *tcN; got != want {
-		t.Errorf("Child returned %v, want %v", got, want)
+		t.Errorf("Child returned %+v, want %+v", got, want)
+	}
+}
+
+func TestChild_noParse(t *testing.T) {
+	f, _ := NewFile(TEST_FILE)
+	n := NewNode(f)
+	if _, err := n.Child(10); err == nil {
+		t.Errorf("Expected error to be returned")
 	}
 }
 
@@ -126,11 +144,19 @@ func TestChildByName(t *testing.T) {
 	_ = n.Parse(0)
 	cN, err := n.ChildByName("Quest")
 	if err != nil {
-		t.Fatalf("ChildByName returned unexpected error: %v", err)
+		t.Fatalf("ChildByName returned unexpected error: %+v", err)
 	}
 	c, _ := n.Children()
 	tcN, _ := c.GetByName("Quest")
 	if got, want := *cN, *tcN; got != want {
-		t.Errorf("ChildByName returned %v, want %v", got, want)
+		t.Errorf("ChildByName returned %+v, want %+v", got, want)
+	}
+}
+
+func TestChildByName_noParse(t *testing.T) {
+	f, _ := NewFile(TEST_FILE)
+	n := NewNode(f)
+	if _, err := n.ChildByName("Quest"); err == nil {
+		t.Errorf("Expected error to be returned")
 	}
 }
