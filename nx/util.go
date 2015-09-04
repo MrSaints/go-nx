@@ -2,16 +2,8 @@ package nx
 
 import (
 	"encoding/binary"
-	"log"
 	"math"
 )
-
-func failOnError(err error) {
-	if err != nil {
-		log.Fatal(err)
-		panic(err)
-	}
-}
 
 func readU16(b []byte) uint16 { // 2
 	return binary.LittleEndian.Uint16(b)
