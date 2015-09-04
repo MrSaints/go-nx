@@ -55,12 +55,12 @@ func (n *Node) Parse(i uint) error {
 		err := errors.New("Cannot unmarshal an initialised node. It may be corrupted.")
 		return err
 	}
-	if i >= uint(n.f.Header.nodeCount) {
+	if i >= uint(n.f.header.nodeCount) {
 		err := errors.New("The node index provided does not exists. It exceeds the total number of nodes.")
 		return err
 	}
 
-	offset := n.f.Header.nodeOffset + uint64(i)*20
+	offset := n.f.header.nodeOffset + uint64(i)*20
 	buffer := n.f.raw
 
 	stringID := readU32(buffer[offset:])
@@ -73,6 +73,7 @@ func (n *Node) Parse(i uint) error {
 	n.Type = readU16(buffer[offset:])
 	offset += 2
 
+	// WIP / TODO
 	switch n.Type {
 	case 1: // Int64
 		n.Data = LongNode{read64(buffer[offset:])}

@@ -6,8 +6,8 @@ import (
 )
 
 type File struct {
-	Header *Header
 	fn     string
+	header *Header
 	raw    mmap.MMap
 }
 
@@ -27,14 +27,14 @@ func NewFile(fn string) (*File, error) {
 	nxf.fn = fn
 	nxf.raw = buffer
 
-	nxf.Header = NewHeader(nxf)
-	err = nxf.Header.Parse()
+	nxf.header = NewHeader(nxf)
+	err = nxf.header.Parse()
 
 	return nxf, err
 }
 
 func (nx *File) GetString(index uint) string {
-	tableOffset := nx.Header.stringOffset + uint64(index)*8
+	tableOffset := nx.header.stringOffset + uint64(index)*8
 	stringOffset := readU64(nx.raw[tableOffset:])
 	length := readU16(nx.raw[stringOffset:])
 	return string(nx.raw[stringOffset+2 : stringOffset+2+uint64(length)])
