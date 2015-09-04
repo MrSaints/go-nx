@@ -7,7 +7,7 @@ before_install:
     - go get github.com/axw/gocov/gocov
     - go get github.com/mattn/goveralls
     - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
-script:
-    - go test -v -covermode=count -coverprofile=coverage.out
+install: go get -v ./nx
+script: go test -v ./nx -covermode=count -coverprofile=coverage.out
 after_success:
     - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken zNUKCbXxbNkPUiw1LXo6HNZeQyz81k8B6
