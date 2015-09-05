@@ -5,9 +5,9 @@
 [![GoDoc](https://godoc.org/github.com/MrSaints/go-nx/nx?status.svg)](https://godoc.org/github.com/MrSaints/go-nx/nx)
 
 
-A Go package for parsing, and programmatically working with files with the [NX/PKG4 format](http://nxformat.github.io/).
+A Go package for parsing, and programmatically working with files with the [NX/PKG4 format][nxformat].
 
-This library was inspired by [Diamondo25's][diamondo25] [node-nx-parser (Node)][node-nx] and [Strax's][strax] [nx-pkg4 (Java)][java-nx] NX library.
+This library's design was inspired by [Diamondo25's][diamondo25] [node-nx-parser (Node)][node-nx] and [Strax's][strax] [nx-pkg4 (Java)][java-nx] NX library.
 
 
 ## Usage
@@ -24,8 +24,14 @@ This library was inspired by [Diamondo25's][diamondo25] [node-nx-parser (Node)][
     import "github.com/MrSaints/go-nx/nx"
     ```
 
+View the [GoDoc][], [examples][] or [code][] for more information.
 
+
+[nxformat]: http://nxformat.github.io/
 [diamondo25]: https://github.com/diamondo25/
 [strax]: https://github.com/strax
 [node-nx]: https://github.com/diamondo25/node-nx-parser
 [java-nx]: https://github.com/strax/nx-pkg4
+[GoDoc]: https://godoc.org/github.com/MrSaints/go-nx/nx
+[examples]: https://github.com/MrSaints/go-nx/tree/master/examples
+[code]: https://github.com/MrSaints/go-nx/tree/master/nx
