@@ -4,6 +4,12 @@ import (
 	"errors"
 )
 
+var (
+	ErrNodeIndex   = errors.New("the node index provided does not exist / it exceeds the total number of nodes")
+	ErrNodeParsed  = errors.New("this node has already been parsed")
+	ErrNodeNoChild = errors.New("this node does not have any children or it is not yet parsed")
+)
+
 type Children struct {
 	Indexes map[string]uint
 	Nodes   []*Node
@@ -12,8 +18,9 @@ type Children struct {
 
 type Node struct {
 	f       *File
+	Id      uint
 	Name    string
-	ChildID uint32
+	ChildId uint32
 	Count   uint16
 	Type    uint16
 	Data    interface{}
@@ -36,75 +43,72 @@ type VectorNode struct {
 }
 
 type BitmapNode struct {
-	ID     uint32
+	Id     uint32
 	Width  uint16
 	Height uint16
 }
 
 type AudioNode struct {
-	ID     uint32
+	Id     uint32
 	Length uint32
 }
 
-func NewNode(f *File) *Node {
-	return &Node{f: f}
+func NewNode(nxf *File, i uint) (*Node, error) {
+	if i >= uint(nxf.header.nodeCount) {
+		return nil, ErrNodeIndex
+	}
+	return &Node{f: nxf, Id: i}, nil
 }
 
-func (n *Node) Parse(i uint) error {
-	if n.Name != "" {
-		err := errors.New("Cannot unmarshal an initialised node. It may be corrupted.")
-		return err
-	}
-	if i >= uint(n.f.header.nodeCount) {
-		err := errors.New("The node index provided does not exists. It exceeds the total number of nodes.")
-		return err
+func (nd *Node) Parse() error {
+	// TODO: Check for empty nd.f
+	if nd.Name != "" {
+		return ErrNodeParsed
 	}
 
-	offset := n.f.header.nodeOffset + uint64(i)*20
-	buffer := n.f.raw
+	offset := nd.f.header.nodeOffset + uint64(nd.Id)*20
 
-	stringID := readU32(buffer[offset:])
-	n.Name = n.f.GetString(uint(stringID))
+	sid := readU32(nd.f.raw[offset:])
+	nd.Name = nd.f.GetString(uint(sid))
 	offset += 4
-	n.ChildID = readU32(buffer[offset:])
+	nd.ChildId = readU32(nd.f.raw[offset:])
 	offset += 4
-	n.Count = readU16(buffer[offset:])
+	nd.Count = readU16(nd.f.raw[offset:])
 	offset += 2
-	n.Type = readU16(buffer[offset:])
+	nd.Type = readU16(nd.f.raw[offset:])
 	offset += 2
 
 	// WIP / TODO
-	switch n.Type {
+	switch nd.Type {
 	case 1: // Int64
-		n.Data = LongNode{read64(buffer[offset:])}
+		nd.Data = LongNode{read64(nd.f.raw[offset:])}
 	case 2: // Double
-		n.Data = FloatNode{readFloat64(buffer[offset:])}
-	case 3: // NX_STRING (StringID)
-		n.Data = StringNode{readU32(buffer[offset:])}
+		nd.Data = FloatNode{readFloat64(nd.f.raw[offset:])}
+	case 3: // NX_STRING (String Id)
+		nd.Data = StringNode{readU32(nd.f.raw[offset:])}
 	case 4: // NX_VECTOR (X and Y)
-		n.Data = VectorNode{
-			read32(buffer[offset:]),
-			read32(buffer[offset+4:]),
+		nd.Data = VectorNode{
+			read32(nd.f.raw[offset:]),
+			read32(nd.f.raw[offset+4:]),
 		}
 	case 5: // NX_BITMAP (BitmapID, W, H)
-		n.Data = BitmapNode{
-			readU32(buffer[offset:]),
-			readU16(buffer[offset+4:]), readU16(buffer[offset+6:]),
+		nd.Data = BitmapNode{
+			readU32(nd.f.raw[offset:]),
+			readU16(nd.f.raw[offset+4:]), readU16(nd.f.raw[offset+6:]),
 		}
 	case 6: // NX_AUDIO
-		n.Data = AudioNode{
-			readU32(buffer[offset:]),
-			readU32(buffer[offset+4:]),
+		nd.Data = AudioNode{
+			readU32(nd.f.raw[offset:]),
+			readU32(nd.f.raw[offset+4:]),
 		}
 	}
 	return nil
 }
 
-func (n *Node) Children() (*Children, error) {
-	totalNodes := uint(n.Count)
+func (nd *Node) Children() (*Children, error) {
+	totalNodes := uint(nd.Count)
 	if totalNodes == 0 {
-		err := errors.New("This node does not have any children or it is not yet parsed.")
-		return nil, err
+		return nil, ErrNodeNoChild
 	}
 
 	c := new(Children)
@@ -113,45 +117,43 @@ func (n *Node) Children() (*Children, error) {
 	c.Total = totalNodes
 
 	for i := uint(0); i < totalNodes; i++ {
-		cN := NewNode(n.f)
-		err := cN.Parse(uint(n.ChildID) + i)
+		cnd := NewNode(nd.f)
+		err := cnd.Parse(uint(n.ChildId) + i)
 		if err != nil {
 			return nil, err
 		}
-		c.Indexes[cN.Name] = i
-		c.Nodes[i] = cN
+		c.Indexes[cnd.Name] = i
+		c.Nodes[i] = cnd
 	}
 	return c, nil
 }
 
-func (c *Children) Get(i uint) (*Node, error) {
+func (c *Children) Child(n string) (*Node, error) {
+	if i, ok := c.Indexes[n]; c.Nodes[i] != nil && ok {
+		return c.Nodes[i], nil
+	}
+	return nil, ErrNodeIndex
+}
+
+func (c *Children) ChildById(i uint) (*Node, error) {
 	if i >= c.Total {
-		err := errors.New("The child node index provided does not exist. It exceeds the total number of child nodes.")
-		return nil, err
+		return nil, ErrNodeIndex
 	}
 	return c.Nodes[i], nil
 }
 
-func (c *Children) GetByName(n string) (*Node, error) {
-	if i, ok := c.Indexes[n]; c.Nodes[i] != nil && ok {
-		return c.Nodes[i], nil
-	}
-	err := errors.New("The child node name provided does not exist.")
-	return nil, err
-}
-
-func (n *Node) Child(i uint) (*Node, error) {
+func (n *Node) Child(id string) (*Node, error) {
 	c, err := n.Children()
 	if err != nil {
 		return nil, err
 	}
-	return c.Get(i)
+	return c.Child(id)
 }
 
-func (n *Node) ChildByName(id string) (*Node, error) {
+func (n *Node) ChildById(i uint) (*Node, error) {
 	c, err := n.Children()
 	if err != nil {
 		return nil, err
 	}
-	return c.GetByName(id)
+	return c.ChildById(i)
 }

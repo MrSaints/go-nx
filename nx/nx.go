@@ -4,8 +4,8 @@ import (
 //"strings"
 )
 
-func (f *File) Root() (*Node, error) {
-	rN := NewNode(f)
-	err := rN.Parse(0)
-	return rN, err
+func (nxf *File) Root() (*Node, error) {
+	rnd := NewNode(nxf)
+	err := rnd.Parse(0)
+	return rnd, err
 }

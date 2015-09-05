@@ -7,35 +7,38 @@ import (
 
 type File struct {
 	fn     string
-	header *Header
+	header Header
 	raw    mmap.MMap
 }
 
-func NewFile(fn string) (*File, error) {
+func NewFile(fn string, p bool) (*File, error) {
 	f, err := os.Open(fn)
 	defer f.Close()
 	if err != nil {
 		return nil, err
 	}
 
-	buffer, err := mmap.Map(f, mmap.RDONLY, 0)
+	buf, err := mmap.Map(f, mmap.RDONLY, 0)
 	if err != nil {
 		return nil, err
 	}
 
 	nxf := new(File)
 	nxf.fn = fn
-	nxf.raw = buffer
+	nxf.raw = buf
 
-	nxf.header = NewHeader(nxf)
-	err = nxf.header.Parse()
+	if p {
+		err = nxf.Parse()
+	}
 
 	return nxf, err
 }
 
-func (nx *File) GetString(index uint) string {
-	tableOffset := nx.header.stringOffset + uint64(index)*8
-	stringOffset := readU64(nx.raw[tableOffset:])
-	length := readU16(nx.raw[stringOffset:])
-	return string(nx.raw[stringOffset+2 : stringOffset+2+uint64(length)])
+func (nxf *File) Parse() error {
+	nxh, err = nxf.Header()
+	if err != nil {
+		return err
+	}
+	nxf.header = nxh
+	return nil
 }
