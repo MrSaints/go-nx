@@ -5,7 +5,10 @@ import (
 )
 
 func (nxf *File) Root() (*Node, error) {
-	rnd := NewNode(nxf)
-	err := rnd.Parse(0)
+	rnd, err := NewNode(nxf, 0)
+	if err != nil {
+		return nil, err
+	}
+	err = rnd.Parse()
 	return rnd, err
 }

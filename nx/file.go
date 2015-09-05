@@ -35,7 +35,7 @@ func NewFile(fn string, p bool) (*File, error) {
 }
 
 func (nxf *File) Parse() error {
-	nxh, err = nxf.Header()
+	nxh, err := nxf.Header()
 	if err != nil {
 		return err
 	}

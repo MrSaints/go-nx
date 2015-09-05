@@ -26,35 +26,42 @@ type Node struct {
 	Data    interface{}
 }
 
+type DataNode interface {
+	Value() interface{}
+}
+
+type EmptyNode struct {
+}
+
 type LongNode struct {
-	Value int64
+	d int64
 }
 
 type FloatNode struct {
-	Value float64
+	d float64
 }
 
 type StringNode struct {
-	Value uint32
+	d uint32
 }
 
 type VectorNode struct {
-	X, Y int32
+	x, y int32
 }
 
 type BitmapNode struct {
-	Id     uint32
-	Width  uint16
-	Height uint16
+	id uint32
+	w  uint16
+	h  uint16
 }
 
 type AudioNode struct {
-	Id     uint32
-	Length uint32
+	id     uint32
+	length uint32
 }
 
 func NewNode(nxf *File, i uint) (*Node, error) {
-	if i >= uint(nxf.header.nodeCount) {
+	if i >= uint(nxf.header.NodeCount) {
 		return nil, ErrNodeIndex
 	}
 	return &Node{f: nxf, Id: i}, nil
@@ -80,6 +87,8 @@ func (nd *Node) Parse() error {
 
 	// WIP / TODO
 	switch nd.Type {
+	case 0:
+		nd.Data = EmptyNode{}
 	case 1: // Int64
 		nd.Data = LongNode{read64(nd.f.raw[offset:])}
 	case 2: // Double
@@ -117,8 +126,11 @@ func (nd *Node) Children() (*Children, error) {
 	c.Total = totalNodes
 
 	for i := uint(0); i < totalNodes; i++ {
-		cnd := NewNode(nd.f)
-		err := cnd.Parse(uint(n.ChildId) + i)
+		cnd, err := NewNode(nd.f, uint(nd.ChildId)+i)
+		if err != nil {
+			return nil, err
+		}
+		err = cnd.Parse()
 		if err != nil {
 			return nil, err
 		}
@@ -128,32 +140,16 @@ func (nd *Node) Children() (*Children, error) {
 	return c, nil
 }
 
-func (c *Children) Child(n string) (*Node, error) {
+func (c *Children) Get(n string) (*Node, error) {
 	if i, ok := c.Indexes[n]; c.Nodes[i] != nil && ok {
 		return c.Nodes[i], nil
 	}
 	return nil, ErrNodeIndex
 }
 
-func (c *Children) ChildById(i uint) (*Node, error) {
+func (c *Children) GetById(i uint) (*Node, error) {
 	if i >= c.Total {
 		return nil, ErrNodeIndex
 	}
 	return c.Nodes[i], nil
-}
-
-func (n *Node) Child(id string) (*Node, error) {
-	c, err := n.Children()
-	if err != nil {
-		return nil, err
-	}
-	return c.Child(id)
-}
-
-func (n *Node) ChildById(i uint) (*Node, error) {
-	c, err := n.Children()
-	if err != nil {
-		return nil, err
-	}
-	return c.ChildById(i)
 }

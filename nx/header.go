@@ -9,42 +9,42 @@ const (
 )
 
 var (
-	ErrFileUninitialised = errors.New("this file has not been initialised properly with NewFile")
-	ErrFileInvalid       = errors.New("this file is not an NX (PKG4) file")
+	ErrFileInvalid = errors.New("this file is not an NX (PKG4) file or it has not been initialised properly with NewFile")
 )
 
 type Header struct {
 	magic        string
-	nodeCount    uint32
+	NodeCount    uint32
 	nodeOffset   uint64
-	stringCount  uint32
+	StringCount  uint32
 	stringOffset uint64
-	bitmapCount  uint32
+	BitmapCount  uint32
 	bitmapOffset uint64
-	audioCount   uint32
+	AudioCount   uint32
 	audioOffset  uint64
 }
 
 func (nxf *File) Header() (Header, error) {
-	if nxh := nxf.header; nxh != nil {
+	if nxh := nxf.header; nxh != (Header{}) {
 		return nxh, nil
 	}
 	if len(nxf.raw) < 4 {
-		return nil, ErrFileUninitialised
+		return Header{}, ErrFileInvalid
 	}
 	v := string(nxf.raw[0:4])
 	if v != PKG4 {
-		return nil, ErrFileInvalid
+		return Header{}, ErrFileInvalid
 	}
-	nxh := new(Header)
+
+	nxh := Header{}
 	nxh.magic = v
-	nxh.nodeCount = readU32(nxf.raw[4:8])
+	nxh.NodeCount = readU32(nxf.raw[4:8])
 	nxh.nodeOffset = readU64(nxf.raw[8:16])
-	nxh.stringCount = readU32(nxf.raw[16:20])
+	nxh.StringCount = readU32(nxf.raw[16:20])
 	nxh.stringOffset = readU64(nxf.raw[20:28])
-	nxh.bitmapCount = readU32(nxf.raw[28:32])
+	nxh.BitmapCount = readU32(nxf.raw[28:32])
 	nxh.bitmapOffset = readU64(nxf.raw[32:40])
-	nxh.audioCount = readU32(nxf.raw[40:44])
+	nxh.AudioCount = readU32(nxf.raw[40:44])
 	nxh.audioOffset = readU64(nxf.raw[44:52])
 	return nxh, nil
 }

@@ -5,16 +5,23 @@ import (
 )
 
 func TestRoot(t *testing.T) {
-	f, _ := NewFile(TEST_FILE)
-	if _, err := f.Root(); err != nil {
-		t.Fatalf("Root returned unexpected error: %v", err)
+	nxf, _ := NewFile(TestFile, true)
+	if _, err := nxf.Root(); err != nil {
+		t.Fatalf("Root returned unexpected error: %+v", err)
+	}
+}
+
+func TestRoot_badInitialisation(t *testing.T) {
+	nxf := new(File)
+	if _, err := nxf.Root(); err == nil {
+		t.Errorf("Expected error to be returned")
 	}
 }
 
 func BenchmarkRoot(b *testing.B) {
-	f, _ := NewFile(TEST_FILE)
+	nxf, _ := NewFile(TestFile, true)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		f.Root()
+		nxf.Root()
 	}
 }

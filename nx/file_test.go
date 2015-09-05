@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-const TEST_FILE = "../data/Base.nx"
+const TestFile = "../data/Base.nx"
 
 func loadTestFile() (mmap.MMap, error) {
-	f, err := os.Open(TEST_FILE)
+	f, err := os.Open(TestFile)
 	defer f.Close()
 	if err != nil {
 		return nil, err
@@ -20,23 +20,26 @@ func loadTestFile() (mmap.MMap, error) {
 func TestNewFile(t *testing.T) {
 	tf, err := loadTestFile()
 	if err != nil {
-		t.Fatalf("Unable to load test file: %v", err)
+		t.Fatalf("Unable to load test file: %+v", err)
 	}
 
-	f, err := NewFile(TEST_FILE)
+	nxf, err := NewFile(TestFile, false)
 	if err != nil {
 		t.Fatalf("NewFile returned unexpected error: %+v", err)
 	}
-	if got, want := f.fn, TEST_FILE; got != want {
-		t.Errorf("File name is %v, want %v", got, want)
+	if got, want := nxf.fn, TestFile; got != want {
+		t.Errorf("File name is %+v, want %+v", got, want)
 	}
-	if got, want := len(f.raw), len(tf); got != want {
-		t.Errorf("Raw mmap buffer length is %v, want %v", got, want)
+	if got, want := len(nxf.raw), len(tf); got != want {
+		t.Errorf("File buffer length is %+v, want %+v", got, want)
+	}
+	if got, want := nxf.header, (Header{}); got != want {
+		t.Errorf("File header is %+v, want %+v", got, want)
 	}
 }
 
 func TestNewFile_noFile(t *testing.T) {
-	_, err := NewFile("")
+	_, err := NewFile("", false)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -45,8 +48,22 @@ func TestNewFile_noFile(t *testing.T) {
 	}
 }
 
+func TestFileParse(t *testing.T) {
+	nxf, _ := NewFile(TestFile, false)
+	if err := nxf.Parse(); err != nil {
+		t.Fatalf("Parse returned unexpected error: %+v", err)
+	}
+}
+
+func TestFileParse_badInitialisation(t *testing.T) {
+	nxf := new(File)
+	if err := nxf.Parse(); err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
+
 func BenchmarkNewFile(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		NewFile(TEST_FILE)
+		NewFile(TestFile, false)
 	}
 }
