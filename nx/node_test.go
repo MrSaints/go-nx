@@ -85,6 +85,43 @@ func TestNodeParse_badInitialisation(t *testing.T) {
 	}
 }
 
+func TestGetData(t *testing.T) {
+	nd, _ := getNode(1, true)
+	_ = nd.Parse()
+
+	if got, ok := nd.GetData(0).(EmptyNode); !ok {
+		t.Errorf("GetData returned %+v, want EmptyNode{}", got)
+	}
+	nd.Type = 1
+	if got, ok := nd.GetData(0).(LongNode); !ok {
+		t.Errorf("GetData returned %+v, want LongNode{}", got)
+	}
+	nd.Type = 2
+	if got, ok := nd.GetData(0).(FloatNode); !ok {
+		t.Errorf("GetData returned %+v, want FloatNode{}", got)
+	}
+	nd.Type = 3
+	if got, ok := nd.GetData(0).(StringNode); !ok {
+		t.Errorf("GetData returned %+v, want StringNode{}", got)
+	}
+	nd.Type = 4
+	if got, ok := nd.GetData(0).(VectorNode); !ok {
+		t.Errorf("GetData returned %+v, want VectorNode{}", got)
+	}
+	nd.Type = 5
+	if got, ok := nd.GetData(0).(BitmapNode); !ok {
+		t.Errorf("GetData returned %+v, want BitmapNode{}", got)
+	}
+	nd.Type = 6
+	if got, ok := nd.GetData(0).(AudioNode); !ok {
+		t.Errorf("GetData returned %+v, want AudioNode{}", got)
+	}
+	nd.Type = 7
+	if got := nd.GetData(0); got != nil {
+		t.Errorf("GetData returned %+v, want nil", got)
+	}
+}
+
 func TestChildren(t *testing.T) {
 	if _, err := getChildren(0); err != nil {
 		t.Fatalf("Children returned unexpected error: %+v", err)

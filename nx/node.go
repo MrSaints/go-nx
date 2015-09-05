@@ -92,29 +92,34 @@ func (nd *Node) Parse() error {
 	offset += 2
 	nd.Type = readU16(nd.f.raw[offset:])
 	offset += 2
+	nd.Data = nd.GetData(offset)
 
-	// WIP / TODO
+	return nil
+}
+
+func (nd *Node) GetData(offset uint64) interface{} {
+	// TODO: Reader interface
 	switch nd.Type {
 	case 0:
-		nd.Data = EmptyNode{}
+		return EmptyNode{}
 	case 1: // Int64
-		nd.Data = LongNode{read64(nd.f.raw[offset:])}
+		return LongNode{read64(nd.f.raw[offset:])}
 	case 2: // Double
-		nd.Data = FloatNode{readFloat64(nd.f.raw[offset:])}
+		return FloatNode{readFloat64(nd.f.raw[offset:])}
 	case 3: // NX_STRING (String Id)
-		nd.Data = StringNode{readU32(nd.f.raw[offset:])}
+		return StringNode{readU32(nd.f.raw[offset:])}
 	case 4: // NX_VECTOR (X and Y)
-		nd.Data = VectorNode{
+		return VectorNode{
 			read32(nd.f.raw[offset:]),
 			read32(nd.f.raw[offset+4:]),
 		}
 	case 5: // NX_BITMAP (BitmapID, W, H)
-		nd.Data = BitmapNode{
+		return BitmapNode{
 			readU32(nd.f.raw[offset:]),
 			readU16(nd.f.raw[offset+4:]), readU16(nd.f.raw[offset+6:]),
 		}
 	case 6: // NX_AUDIO
-		nd.Data = AudioNode{
+		return AudioNode{
 			readU32(nd.f.raw[offset:]),
 			readU32(nd.f.raw[offset+4:]),
 		}
