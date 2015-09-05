@@ -13,7 +13,7 @@ var (
 )
 
 type Header struct {
-	magic        string
+	Magic        string
 	NodeCount    uint32
 	nodeOffset   uint64
 	StringCount  uint32
@@ -37,7 +37,7 @@ func (nxf *File) Header() (Header, error) {
 	}
 
 	nxh := Header{}
-	nxh.magic = v
+	nxh.Magic = v
 	nxh.NodeCount = readU32(nxf.raw[4:8])
 	nxh.nodeOffset = readU64(nxf.raw[8:16])
 	nxh.StringCount = readU32(nxf.raw[16:20])

@@ -1,6 +1,7 @@
 package nx
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -183,4 +184,12 @@ func TestChildrenGetById_invalidIndex(t *testing.T) {
 	if err != ErrNodeIndex {
 		t.Errorf("Expected a node index error, got %+v", err)
 	}
+}
+
+func ExampleNodeParse() {
+	nxf, _ := NewFile(TestFile, true)
+	nd, _ := NewNode(nxf, 12)
+	_ = nd.Parse()
+	fmt.Printf("Node name: %s", nd.Name)
+	// Output: Node name: Sound
 }

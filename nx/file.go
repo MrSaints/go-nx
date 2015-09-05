@@ -6,7 +6,7 @@ import (
 )
 
 type File struct {
-	fn     string
+	Fn     string
 	header Header
 	raw    mmap.MMap
 }
@@ -24,7 +24,7 @@ func NewFile(fn string, p bool) (*File, error) {
 	}
 
 	nxf := new(File)
-	nxf.fn = fn
+	nxf.Fn = fn
 	nxf.raw = buf
 
 	if p {

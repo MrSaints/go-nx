@@ -1,6 +1,7 @@
 package nx
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,7 +12,7 @@ func TestHeader(t *testing.T) {
 		t.Fatalf("Header returned unexpected error: %+v", err)
 	}
 
-	if got, want := nxh.magic, PKG4; got != want {
+	if got, want := nxh.Magic, PKG4; got != want {
 		t.Errorf("Magic / version is %+v, want %+v", got, want)
 	}
 	if got, want := nxh.NodeCount, uint32(440); got != want {
@@ -69,4 +70,11 @@ func TestHeader_invalidFile(t *testing.T) {
 	if err != ErrFileInvalid {
 		t.Errorf("Expected an invalid file error, got %+v", err)
 	}
+}
+
+func ExampleHeader() {
+	nxf, _ := NewFile(TestFile, false)
+	nxh, _ := nxf.Header()
+	fmt.Printf("Magic / version: %s", nxh.Magic)
+	// Output: Magic / version: PKG4
 }

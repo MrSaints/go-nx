@@ -1,6 +1,7 @@
 package nx
 
 import (
+	"fmt"
 	"github.com/edsrzf/mmap-go"
 	"os"
 	"testing"
@@ -27,7 +28,7 @@ func TestNewFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewFile returned unexpected error: %+v", err)
 	}
-	if got, want := nxf.fn, TestFile; got != want {
+	if got, want := nxf.Fn, TestFile; got != want {
 		t.Errorf("File name is %+v, want %+v", got, want)
 	}
 	if got, want := len(nxf.raw), len(tf); got != want {
@@ -60,6 +61,12 @@ func TestFileParse_badInitialisation(t *testing.T) {
 	if err := nxf.Parse(); err == nil {
 		t.Errorf("Expected error to be returned")
 	}
+}
+
+func ExampleNewFile() {
+	nxf, _ := NewFile(TestFile, false)
+	fmt.Printf("File name: '%s'", nxf.Fn)
+	// Output: File name: '../data/Base.nx'
 }
 
 func BenchmarkNewFile(b *testing.B) {

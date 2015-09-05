@@ -1,6 +1,7 @@
 package nx
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -24,4 +25,11 @@ func TestGetString_invalidIndex(t *testing.T) {
 	if err != ErrStringIndex {
 		t.Errorf("Expected a string index error, got %+v", err)
 	}
+}
+
+func ExampleGetString() {
+	nxf, _ := NewFile(TestFile, true)
+	s, _ := nxf.GetString(6)
+	fmt.Printf("String entry #6: %s", s)
+	// Output: String entry #6: Map
 }
