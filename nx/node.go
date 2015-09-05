@@ -7,6 +7,7 @@ import (
 var (
 	ErrNodeIndex   = errors.New("the node index provided does not exist / it exceeds the total number of nodes")
 	ErrNodeParsed  = errors.New("this node has already been parsed")
+	ErrNodeFile    = errors.New("this node has not been initialised properly with NewNode")
 	ErrNodeNoChild = errors.New("this node does not have any children or it is not yet parsed")
 )
 
@@ -68,15 +69,22 @@ func NewNode(nxf *File, i uint) (*Node, error) {
 }
 
 func (nd *Node) Parse() error {
-	// TODO: Check for empty nd.f
 	if nd.Name != "" {
 		return ErrNodeParsed
+	}
+
+	if nd.f == nil {
+		return ErrNodeFile
 	}
 
 	offset := nd.f.header.nodeOffset + uint64(nd.Id)*20
 
 	sid := readU32(nd.f.raw[offset:])
-	nd.Name = nd.f.GetString(uint(sid))
+	name, err := nd.f.GetString(uint(sid))
+	if err != nil {
+		return err
+	}
+	nd.Name = name
 	offset += 4
 	nd.ChildId = readU32(nd.f.raw[offset:])
 	offset += 4

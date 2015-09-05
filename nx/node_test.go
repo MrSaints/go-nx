@@ -74,6 +74,17 @@ func TestNodeParse_repeatedCall(t *testing.T) {
 	}
 }
 
+func TestNodeParse_badInitialisation(t *testing.T) {
+	nd := new(Node)
+	err := nd.Parse()
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+	if err != ErrNodeFile {
+		t.Errorf("Expected a node parsed error, got %+v", err)
+	}
+}
+
 func TestChildren(t *testing.T) {
 	if _, err := getChildren(0); err != nil {
 		t.Fatalf("Children returned unexpected error: %+v", err)
