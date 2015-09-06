@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/edsrzf/mmap-go"
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -31,8 +32,8 @@ func TestNewFile(t *testing.T) {
 	if got, want := nxf.Fn, TestFile; got != want {
 		t.Errorf("File name is %+v, want %+v", got, want)
 	}
-	if got, want := len(nxf.raw), len(tf); got != want {
-		t.Errorf("File buffer length is %+v, want %+v", got, want)
+	if got, want := nxf.raw, tf; !reflect.DeepEqual(got, want) {
+		t.Errorf("File buffer is %+v, want %+v", got, want)
 	}
 	if got, want := nxf.header, (Header{}); got != want {
 		t.Errorf("File header is %+v, want %+v", got, want)
@@ -53,6 +54,10 @@ func TestFile_Parse(t *testing.T) {
 	nxf, _ := NewFile(TestFile, false)
 	if err := nxf.Parse(); err != nil {
 		t.Fatalf("Parse returned unexpected error: %+v", err)
+	}
+	nxh, _ := nxf.Header()
+	if got, want := nxh, nxf.header; !reflect.DeepEqual(got, want) {
+		t.Errorf("Header returned %+v, want %+v", got, want)
 	}
 }
 
