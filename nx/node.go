@@ -19,9 +19,9 @@ type Children struct {
 
 type Node struct {
 	f       *File
-	Id      uint
+	ID      uint
 	Name    string
-	ChildId uint32
+	ChildID uint32
 	Count   uint16
 	Type    uint16
 	Data    interface{}
@@ -65,7 +65,7 @@ func NewNode(nxf *File, i uint) (*Node, error) {
 	if i >= uint(nxf.header.NodeCount) {
 		return nil, ErrNodeIndex
 	}
-	return &Node{f: nxf, Id: i}, nil
+	return &Node{f: nxf, ID: i}, nil
 }
 
 func (nd *Node) Parse() error {
@@ -77,7 +77,7 @@ func (nd *Node) Parse() error {
 		return ErrNodeFile
 	}
 
-	offset := nd.f.header.nodeOffset + uint64(nd.Id)*20
+	offset := nd.f.header.nodeOffset + uint64(nd.ID)*20
 
 	sid := readU32(nd.f.raw[offset:])
 	name, err := nd.f.GetString(uint(sid))
@@ -86,7 +86,7 @@ func (nd *Node) Parse() error {
 	}
 	nd.Name = name
 	offset += 4
-	nd.ChildId = readU32(nd.f.raw[offset:])
+	nd.ChildID = readU32(nd.f.raw[offset:])
 	offset += 4
 	nd.Count = readU16(nd.f.raw[offset:])
 	offset += 2
@@ -139,7 +139,7 @@ func (nd *Node) Children() (*Children, error) {
 	c.Total = totalNodes
 
 	for i := uint(0); i < totalNodes; i++ {
-		cnd, err := NewNode(nd.f, uint(nd.ChildId)+i)
+		cnd, err := NewNode(nd.f, uint(nd.ChildID)+i)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +160,7 @@ func (c *Children) Get(n string) (*Node, error) {
 	return nil, ErrNodeIndex
 }
 
-func (c *Children) GetById(i uint) (*Node, error) {
+func (c *Children) GetByID(i uint) (*Node, error) {
 	if i >= c.Total {
 		return nil, ErrNodeIndex
 	}

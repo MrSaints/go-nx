@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGetString(t *testing.T) {
+func TestFile_GetString(t *testing.T) {
 	nxf, _ := NewFile(TestFile, true)
 	s, err := nxf.GetString(6)
 	if err != nil {
@@ -16,7 +16,7 @@ func TestGetString(t *testing.T) {
 	}
 }
 
-func TestGetString_invalidIndex(t *testing.T) {
+func TestFile_GetString_invalidIndex(t *testing.T) {
 	nxf, _ := NewFile(TestFile, true)
 	_, err := nxf.GetString(uint(nxf.header.StringCount))
 	if err == nil {
@@ -27,7 +27,7 @@ func TestGetString_invalidIndex(t *testing.T) {
 	}
 }
 
-func ExampleGetString() {
+func ExampleFile_GetString() {
 	nxf, _ := NewFile(TestFile, true)
 	s, _ := nxf.GetString(6)
 	fmt.Printf("String entry #6: %s", s)

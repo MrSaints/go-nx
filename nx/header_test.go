@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestHeader(t *testing.T) {
+func TestFile_Header(t *testing.T) {
 	nxf, _ := NewFile(TestFile, false)
 	nxh, err := nxf.Header()
 	if err != nil {
@@ -41,7 +41,7 @@ func TestHeader(t *testing.T) {
 	}
 }
 
-func TestHeader_repeatedCall(t *testing.T) {
+func TestFile_Header_repeatedCall(t *testing.T) {
 	nxf, _ := NewFile(TestFile, true)
 	got, _ := nxf.Header()
 	want := nxf.header
@@ -50,7 +50,7 @@ func TestHeader_repeatedCall(t *testing.T) {
 	}
 }
 
-func TestHeader_badInitialisation(t *testing.T) {
+func TestFile_Header_badInitialisation(t *testing.T) {
 	nxf := new(File)
 	_, err := nxf.Header()
 	if err == nil {
@@ -61,7 +61,7 @@ func TestHeader_badInitialisation(t *testing.T) {
 	}
 }
 
-func TestHeader_invalidFile(t *testing.T) {
+func TestFile_Header_invalidFile(t *testing.T) {
 	nxf := &File{raw: []byte("PKG1")}
 	_, err := nxf.Header()
 	if err == nil {
@@ -72,7 +72,7 @@ func TestHeader_invalidFile(t *testing.T) {
 	}
 }
 
-func ExampleHeader() {
+func ExampleFile_Header() {
 	nxf, _ := NewFile(TestFile, false)
 	nxh, _ := nxf.Header()
 	fmt.Printf("Magic / version: %s", nxh.Magic)

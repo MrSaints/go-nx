@@ -11,10 +11,10 @@ const TestFile = "../data/Base.nx"
 
 func loadTestFile() (mmap.MMap, error) {
 	f, err := os.Open(TestFile)
-	defer f.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 	return mmap.Map(f, mmap.RDONLY, 0)
 }
 
@@ -49,14 +49,14 @@ func TestNewFile_noFile(t *testing.T) {
 	}
 }
 
-func TestFileParse(t *testing.T) {
+func TestFile_Parse(t *testing.T) {
 	nxf, _ := NewFile(TestFile, false)
 	if err := nxf.Parse(); err != nil {
 		t.Fatalf("Parse returned unexpected error: %+v", err)
 	}
 }
 
-func TestFileParse_badInitialisation(t *testing.T) {
+func TestFile_Parse_badInitialisation(t *testing.T) {
 	nxf := new(File)
 	if err := nxf.Parse(); err == nil {
 		t.Errorf("Expected error to be returned")
