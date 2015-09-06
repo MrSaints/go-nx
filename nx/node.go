@@ -19,6 +19,7 @@ type Children struct {
 
 type Node struct {
 	f       *File
+	c       *Children
 	ID      uint
 	Name    string
 	ChildID uint32
@@ -132,11 +133,14 @@ func (nd *Node) Children() (*Children, error) {
 	if totalNodes == 0 {
 		return nil, ErrNodeNoChild
 	}
+	if nd.c != nil {
+		return nd.c, nil
+	}
 
-	c := new(Children)
-	c.Indexes = make(map[string]uint, totalNodes)
-	c.Nodes = make([]*Node, totalNodes)
-	c.Total = totalNodes
+	nd.c = new(Children)
+	nd.c.Indexes = make(map[string]uint, totalNodes)
+	nd.c.Nodes = make([]*Node, totalNodes)
+	nd.c.Total = totalNodes
 
 	for i := uint(0); i < totalNodes; i++ {
 		cnd, err := NewNode(nd.f, uint(nd.ChildID)+i)
@@ -147,10 +151,10 @@ func (nd *Node) Children() (*Children, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Indexes[cnd.Name] = i
-		c.Nodes[i] = cnd
+		nd.c.Indexes[cnd.Name] = i
+		nd.c.Nodes[i] = cnd
 	}
-	return c, nil
+	return nd.c, nil
 }
 
 func (c *Children) Get(n string) (*Node, error) {
