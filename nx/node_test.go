@@ -140,6 +140,16 @@ func TestNode_Children_noParse(t *testing.T) {
 	}
 }
 
+func TestNode_Children_repeatedCall(t *testing.T) {
+	nd, _ := getNode(0, true)
+	_ = nd.Parse()
+	got, _ := nd.Children()
+	want, _ := nd.Children()
+	if got != want {
+		t.Errorf("Children returned %p, want %p", got, want)
+	}
+}
+
 func TestChildren_Get(t *testing.T) {
 	c, _ := getChildren(0)
 	got, err := c.Get("Reactor")
