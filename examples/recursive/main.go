@@ -37,7 +37,7 @@ func main() {
 
 func printChildren(c *nx.Children) {
 	for i, nd := range c.Nodes {
-		log.Printf("%+v: %+v | %+v | %+v", i, nd.Id, nd.Name, nd.Type)
+		log.Printf("%+v: %+v | %+v | %+v", i, nd.ID, nd.Name, nd.Type)
 
 		if nd.Count > 0 {
 			c2, err := nd.Children()
