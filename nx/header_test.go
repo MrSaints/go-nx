@@ -2,6 +2,7 @@ package nx
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -43,10 +44,10 @@ func TestFile_Header(t *testing.T) {
 
 func TestFile_Header_repeatedCall(t *testing.T) {
 	nxf, _ := NewFile(TestFile, true)
-	got, _ := nxf.Header()
-	want := nxf.header
-	if got != want {
-		t.Errorf("Header returned %+v, want %+v", got, want)
+	nxf.header.Magic = TestString
+	nxh, _ := nxf.Header()
+	if got, want := nxh.Magic, nxf.header.Magic; !reflect.DeepEqual(got, want) {
+		t.Errorf("Magic / version is %+v, want %+v", got, want)
 	}
 }
 
@@ -62,7 +63,7 @@ func TestFile_Header_badInitialisation(t *testing.T) {
 }
 
 func TestFile_Header_invalidFile(t *testing.T) {
-	nxf := &File{raw: []byte("PKG1")}
+	nxf := &File{raw: []byte(TestString)}
 	_, err := nxf.Header()
 	if err == nil {
 		t.Errorf("Expected error to be returned")
