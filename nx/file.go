@@ -13,10 +13,10 @@ type File struct {
 
 func NewFile(fn string, p bool) (*File, error) {
 	f, err := os.Open(fn)
-	defer f.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 
 	buf, err := mmap.Map(f, mmap.RDONLY, 0)
 	if err != nil {
