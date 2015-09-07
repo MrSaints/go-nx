@@ -170,3 +170,19 @@ func (c *Children) GetByID(i uint) (*Node, error) {
 	}
 	return c.Nodes[i], nil
 }
+
+func (nd *Node) Get(n string) (*Node, error) {
+	c, err := nd.Children()
+	if err != nil {
+		return nil, err
+	}
+	return c.Get(n)
+}
+
+func (nd *Node) GetByID(i uint) (*Node, error) {
+	c, err := nd.Children()
+	if err != nil {
+		return nil, err
+	}
+	return c.GetByID(i)
+}

@@ -154,17 +154,17 @@ func TestChildren_Get(t *testing.T) {
 	c, _ := getChildren(0)
 	got, err := c.Get("Reactor")
 	if err != nil {
-		t.Fatalf("Child returned unexpected error: %+v", err)
+		t.Fatalf("Get returned unexpected error: %+v", err)
 	}
 	want := c.Nodes[c.Indexes["Reactor"]]
 	if got != want {
-		t.Errorf("Child returned %+v, want %+v", got, want)
+		t.Errorf("Get returned %+v, want %+v", got, want)
 	}
 }
 
 func TestChildren_Get_invalidIndex(t *testing.T) {
 	c, _ := getChildren(0)
-	_, err := c.Get("Invalid Name")
+	_, err := c.Get(TestString)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -177,11 +177,11 @@ func TestChildren_GetByID(t *testing.T) {
 	c, _ := getChildren(0)
 	got, err := c.GetByID(0)
 	if err != nil {
-		t.Fatalf("ChildById returned unexpected error: %+v", err)
+		t.Fatalf("GetByID returned unexpected error: %+v", err)
 	}
 	want := c.Nodes[0]
 	if got != want {
-		t.Errorf("ChildById returned %+v, want %+v", got, want)
+		t.Errorf("GetByID returned %+v, want %+v", got, want)
 	}
 }
 
@@ -193,6 +193,55 @@ func TestChildren_GetByID_invalidIndex(t *testing.T) {
 	}
 	if err != ErrNodeIndex {
 		t.Errorf("Expected a node index error, got %+v", err)
+	}
+}
+
+func TestNode_Get(t *testing.T) {
+	nd, _ := getNode(0, true)
+	_ = nd.Parse()
+	got, err := nd.Get("Reactor")
+	if err != nil {
+		t.Fatalf("Get returned unexpected error: %+v", err)
+	}
+	want, _ := nd.c.Get("Reactor")
+	if got != want {
+		t.Errorf("Get returned %+v, want %+v", got, want)
+	}
+}
+
+func TestNode_Get_noParse(t *testing.T) {
+	nd, _ := getNode(0, true)
+	//_ = nd.Parse()
+	_, err := nd.Get(TestString)
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+	if err != ErrNodeNoChild {
+		t.Errorf("Expected a no children node error, got %+v", err)
+	}
+}
+
+func TestNode_GetByID(t *testing.T) {
+	nd, _ := getNode(0, true)
+	_ = nd.Parse()
+	got, err := nd.GetByID(0)
+	if err != nil {
+		t.Fatalf("Get returned unexpected error: %+v", err)
+	}
+	want, _ := nd.c.GetByID(0)
+	if got != want {
+		t.Errorf("Get returned %+v, want %+v", got, want)
+	}
+}
+
+func TestNode_GetByID_noParse(t *testing.T) {
+	nd, _ := getNode(0, true)
+	_, err := nd.GetByID(0)
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+	if err != ErrNodeNoChild {
+		t.Errorf("Expected a no children node error, got %+v", err)
 	}
 }
 
