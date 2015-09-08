@@ -5,7 +5,7 @@
 [![GoDoc](https://godoc.org/github.com/MrSaints/go-nx/nx?status.svg)](https://godoc.org/github.com/MrSaints/go-nx/nx)
 
 
-A Go package for parsing, and programmatically working with files with the [NX/PKG4 format][nxformat].
+A Go package for parsing, and programmatically working with [NX/PKG4][nxformat] files.
 
 This library's design was inspired by [Diamondo25's][diamondo25] [node-nx-parser (Node)][node-nx] and [Strax's][strax] [nx-pkg4 (Java)][java-nx] NX library.
 
